@@ -1,0 +1,80 @@
+package com.temenos.sgntech;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import com.temenos.sgntech.ParameterStringBuilder;
+
+/**
+ * TODO: Document me!
+ *
+ * @author Peter
+ *
+ */
+public class TestingGet {
+
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    public static void main(String[] args) throws IOException {
+        ParameterStringBuilder parameterstringBuilder =new ParameterStringBuilder();
+         
+        try {
+        URL url = new URL("http://api.open-meteo.com/v1/forecast");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET"); 
+        con.setRequestProperty("Content-Type", "text/plain");
+        
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("latitude", "52.52");
+        parameters.put("longitude", "13.4");
+        parameters.put("current", "temperature_2m,wind_speed_10m");
+        parameters.put("hourly", "hourly");
+        
+       
+      
+        
+        con.setDoOutput(true);
+        DataOutputStream out = new DataOutputStream(con.getOutputStream());
+       // parameterstringBuilder.getParamsString(parameters);
+        out.writeBytes("");
+        out.flush();
+        out.close();
+    
+        int status = con.getResponseCode();
+        System.out.println(status);
+        
+     
+        
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+              String inputLine;
+              StringBuffer content = new StringBuffer();
+              while ((inputLine = in.readLine()) != null) {
+                  content.append(inputLine);
+              }
+              in.close();
+              System.out.println(content);  
+        }catch (IOException e){
+                    e.printStackTrace();
+            
+        }
+   
+    }
+   
+    
+
+}

@@ -1,0 +1,112 @@
+package com.temenos.sgntech;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+
+/**
+ * TODO: Document me!
+ *
+ * @author Peter
+ *
+ */
+public class HashGenerator {
+
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        String mytimestamp;
+        String username = null;
+        String Nusername = null;
+        String USERname = null;
+        String PASSword = null;
+        StringBuilder UhexString = new StringBuilder();
+        StringBuilder PhexString = new StringBuilder();
+        final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String[] tempm = sdf2.format(timestamp).toString().toString().split("\\+");
+        mytimestamp = (tempm[0] + "Z");
+
+        String mytimestamp1 = mytimestamp;
+        String Usern = "Cooperativa_Ahorro_y_Credito_TestSite";
+        String Psswd = "830058098b40451d8ccb366a3c88a372";
+        String secret = "ae9361c550484a838ca5b6ef0c578488";
+
+        String[] var = new String[3];
+        var[0] = Usern;
+        var[1] = Psswd;
+        var[2] = secret;
+
+        for (int i = 0; i < 2; i++) {
+            String Variable = mytimestamp1 + "." + var[i];
+            System.out.println("Raw Value to-be Hash....." + Variable);
+            try {
+                MessageDigest md;
+                String input = Variable;
+                md = MessageDigest.getInstance("SHA-256");
+                byte[] hash = md.digest(input.getBytes());
+                for (byte b : hash) {
+                    UhexString.append(String.format("%02x", b));
+                    username = UhexString.toString();
+                }
+                System.out.println("UserHashed Value first......." + username);
+
+                String Newvar = username;
+            } catch (NoSuchAlgorithmException e1) {
+            }
+
+            try {
+                MessageDigest mdn;
+                String Newinput = username;
+                mdn = MessageDigest.getInstance("SHA-256");
+                byte[] nhash = mdn.digest(Newinput.getBytes());
+                for (byte c : nhash) {
+                    PhexString.append(String.format("%02x", c));
+                    Nusername = PhexString.toString();
+                }
+                System.out.println("UserHashed Value......." + Nusername);
+            } catch (NoSuchAlgorithmException e2) {
+            }
+            
+
+            if (i == 0) {
+                USERname = Nusername;
+                System.out.println("UserHashed Value......." + USERname);
+            } else {
+                PASSword = Nusername;
+                System.out.println("PasswordHashed Value......." + PASSword);
+            }
+        }
+
+        // System.out.println("My raw timestamp = ..." + mytimestamp1);
+        //
+        // String Variable1 = mytimestamp1+"."+Usern; //hash once
+        //
+        // String Variable2 =mytimestamp1+"."+Psswd; //hash once
+        //
+        // // String var11 = Variable1+"."+secret;
+        // String Variable11 =
+        // "18d42ccf55b5354a48f0ba2fcbffb2b0437bfeb26f8e14a11a232b07b69bfae4"+"."+secret;
+        // String Variable22 =
+        // "32c751a7fdcd4ff58a39b3b7dea1e979ce5e2ef13d1523bc5e0eae67f9164b51"+"."+secret;
+        //
+        //
+        // System.out.println("Raw Value to-be Hash....." + Variable22);
+        //
+        // try {
+        // MessageDigest md;
+        // String input = Variable22;
+        // md = MessageDigest.getInstance("SHA-256");
+        // byte[] hash = md.digest(input.getBytes());
+        // for (byte b : hash) {
+        // UhexString.append(String.format("%02x", b));
+        // username = UhexString.toString();
+        // }
+        // System.out.println("UserHashed Value......." + username);
+        // } catch (NoSuchAlgorithmException e1) {
+        // }
+    }
+}

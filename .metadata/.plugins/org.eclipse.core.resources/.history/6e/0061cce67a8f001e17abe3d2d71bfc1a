@@ -1,0 +1,137 @@
+package com.temenos.sgntech;
+
+import java.io.FileReader;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+
+/**
+ * TODO: Document me!
+ *
+ * @author Peter
+ *
+ */
+public class ConnectTrustev {
+
+    /**
+     * @param args
+     * @throws SocketException 
+     */
+    public static void main(String[] args) throws SocketException {
+       
+        
+        final String uuid = UUID.randomUUID().toString().replace("-", "");
+        System.out.println("uuid = " + uuid);
+        
+        
+        // creating simple request, creating token request
+        final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Map<Object, Object> tokenreqMap = new HashMap<Object, Object>();
+        JSONObject tokenreq_jsonObj;
+        String username = null, pssword = null;
+        String mytimestamp ;
+        String ip = null;
+        StringBuilder UhexString = new StringBuilder();
+        StringBuilder PhexString = new StringBuilder();
+        String[] var = { "Ani", "Sam" };
+
+        for (int i = 0; i < var.length; i++) {
+            String Variable = var[i];
+            try {
+                MessageDigest md;
+                String input = Variable;
+                md = MessageDigest.getInstance("SHA-256");
+                byte[] hash = md.digest(input.getBytes());
+                if (i == 0) {
+                    for (byte b : hash) {
+                        UhexString.append(String.format("%02x", b));
+                    }
+                    username = UhexString.toString();
+                } else {
+                    for (byte b : hash) {
+                        PhexString.append(String.format("%02x", b));
+                    }
+                    pssword = PhexString.toString();
+                }
+                System.out.println(input + " :=Result1--1 " + UhexString);
+                System.out.println(input + " :=Result--2 " + PhexString);
+            } catch (NoSuchAlgorithmException e1) {
+            }
+
+            //Block to get timestamp
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            String[] tempm = sdf2.format(timestamp).toString().toString().split("\\.");
+             mytimestamp = (tempm[0]+".001Z");
+            System.out.println(sdf2.format(timestamp));       
+          //End of Block to get timestamp
+            
+            
+            //Block to create token request
+            tokenreqMap.put("UserName", var[0]);
+            tokenreqMap.put("Timestamp", mytimestamp);
+            tokenreqMap.put("PasswordHash", pssword);
+            tokenreqMap.put("UserNameHash", username);
+            tokenreq_jsonObj = new JSONObject(tokenreqMap);
+            System.out.println("Encoding a JSON object: ");
+            System.out.println(tokenreq_jsonObj);
+            // End of Block to create token request
+            
+        }
+
+      //////get system ip
+        try {
+           Object DeviceIp = InetAddress.getLocalHost();
+           String []ips = DeviceIp.toString().split("\\/");
+            ip = ips[1];
+        } catch (UnknownHostException e1) {
+            // TODO Auto-generated catch block
+            // Uncomment and replace with appropriate logger
+            // LOGGER.error(e1, e1);
+        }
+        ///// End of block getting system Ip
+        
+        
+     ///creating session json request
+        JSONObject jsonObjectReq = new JSONObject();
+        Map<String, String> mapp = new HashMap<>();
+        mapp.put("ClientIp", ip);
+        JSONArray Details = new JSONArray();
+        Details.add(mapp);
+        jsonObjectReq.put("Details", Details);
+        jsonObjectReq.put("BlackBox","XYZ");
+        System.out.println("JSON file created: "+jsonObjectReq);    
+        /////// End of session json request
+      
+      
+        
+        //Extract session ID
+        JSONParser parser = new JSONParser();
+        try {
+            Object obj = parser.parse(new FileReader("C:/Users/Peter/Desktop/TucoopJava/session.json"));
+            JSONObject jsonObject = (JSONObject) obj;
+            String session = (String) jsonObject.get("SessionId");
+            System.out.println("SessionId: " + session);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //End of Extract session ID
+        
+    }
+
+}

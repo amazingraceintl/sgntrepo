@@ -1,0 +1,138 @@
+package com.temenos.sgntech;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import com.temenos.sgntech.ParameterStringBuilder;
+
+/**
+ * TODO: Document me!
+ *
+ * @author Peter
+ *
+ */
+public class TestingGet {
+
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    public static void main(String[] args) throws IOException {
+        ParameterStringBuilder parameterstringBuilder =new ParameterStringBuilder();
+        TestingGet testget = new TestingGet();
+        testget.MyGETRequest();
+//        GetAndPost.MyGETRequest();
+//        GetAndPost.MyPOSTRequest();
+         
+//        try {
+//        URL url = new URL("http://api.open-meteo.com/v1/forecast");
+//        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+//        con.setRequestMethod("GET"); 
+//  
+//        con.setRequestProperty("Content-Type", "text/plain");
+//        
+//        Map<String, String> parameters = new HashMap<>();
+//        parameters.put("latitude", "52.52");
+//        parameters.put("longitude", "13.4");
+//        parameters.put("current", "temperature_2m,wind_speed_10m");
+//        parameters.put("hourly", "temperature_2m,relative_humidity_2m,wind_speed_10m");
+//        
+//        con.setDoOutput(true);
+//        DataOutputStream out = new DataOutputStream(con.getOutputStream());
+//        parameterstringBuilder.getParamsString(parameters);
+//        System.out.println(parameterstringBuilder.getParamsString(parameters));
+//        out.writeBytes(parameterstringBuilder.getParamsString(parameters));
+//        out.flush();
+//        out.close();
+//    
+//        int status = con.getResponseCode();
+//        System.out.println(status);
+//        
+//        Reader streamReader = null;
+//        
+//        if (con.getResponseCode() > 299) {
+//            streamReader = new InputStreamReader(con.getErrorStream());
+//        } else {
+//            streamReader = new InputStreamReader(con.getInputStream());
+//        }
+//
+//        //System.out.println("what....."+con.getErrorStream().toString().toString());
+//        
+//        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+//              String inputLine;
+//              StringBuffer content = new StringBuffer();
+//              while ((inputLine = in.readLine()) != null) {
+//                  content.append(inputLine);
+//              }
+//              in.close();
+//              System.out.println(content);  
+//        }catch (IOException e){
+//                    System.out.println(e.getLocalizedMessage());
+//            
+//        }
+   
+    }  
+    
+    public static void MyGETRequest() throws IOException {
+       // URL urlForGetRequest = new URL("https://jsonplaceholder.typicode.com/posts/1");
+        URL urlForGetRequest = new URL("https://app.trustev.com/api/v2.1/detaileddecision/");
+        //caseid=7ff183f1-6039-493a-a60e-9fb3bd28381e|a980ed07-b307-4211-b850-0f0fe596178d
+
+        String readLine = null;
+        HttpURLConnection conection = (HttpURLConnection) urlForGetRequest.openConnection();
+        conection.setRequestMethod("HttpMethod.GET");
+        conection.setRequestProperty("Content-Type", "application/json");
+        conection.setRequestProperty("caseid", "7ff183f1-6039-493a-a60e-9fb3bd28381e|a980ed07-b307-4211-b850-0f0fe596178d"); // set userId its a sample here
+        conection.setRequestProperty("X-Authorization", "Cooperativa_Ahorro_y_Credito_TestSite f40bccc9-341c-47d3-b793-3f8c3716bdad");
+        conection.setRequestProperty("Host", "app.trustev.com");
+        conection.setRequestProperty("User-Agent", "Apache-HttpClient/4.5.5 (Java/16.0.1)");
+        conection.setRequestProperty("charset","utf-8");
+        conection.setRequestProperty("Connection","Keep-Alive");
+        conection.setRequestProperty("Accept-Encoding", "gzip,deflate");
+
+
+        
+        
+        //        conection.setRequestProperty("longitude", "13.4");
+//        conection.setRequestProperty("current", "temperature_2m,wind_speed_10m");
+//        conection.setRequestProperty("hourly", "temperature_2m,relative_humidity_2m,wind_speed_10m");
+//        
+       // parameters.put("latitude", "52.52");
+//      parameters.put("longitude", "13.4");
+//      parameters.put("current", "temperature_2m,wind_speed_10m");
+//      parameters.put("hourly", "temperature_2m,relative_humidity_2m,wind_speed_10m");
+        
+        int responseCode = conection.getResponseCode();
+
+        System.out.println(responseCode);
+        System.out.println(conection.getContent());
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(conection.getInputStream()));
+            StringBuffer response = new StringBuffer();
+            while ((readLine = in .readLine()) != null) {
+                response.append(readLine);
+            } in .close();
+            // print result
+            System.out.println("JSON String Result " + response.toString());
+            //GetAndPost.POSTRequest(response.toString());
+        } else {
+            System.out.println("GET NOT WORKED");
+        }
+
+
+}
+    }

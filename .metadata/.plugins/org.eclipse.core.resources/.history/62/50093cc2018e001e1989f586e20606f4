@@ -1,0 +1,106 @@
+package com.temenos.sgntech;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+/**
+ * TODO: Document me!
+ *
+ * @author Peter
+ *
+ */
+public class main {
+
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    public static void main(String[] args) throws IOException {
+        // TODO Auto-generated method stub 
+                String url = "https://app.trustev.com/api/v2.0/session";
+                URL obj = new URL(url);
+                String res;
+                JSONObject jsonObjectReq = new JSONObject();
+                Map<String, String> mapp = new HashMap<>();
+                mapp.put("ClientIp", "185.107.57.7");
+                JSONArray Details = new JSONArray();
+                Details.add(mapp);
+                jsonObjectReq.put("Details", Details);
+                jsonObjectReq.put("BlackBox","XYZ");
+                System.out.println("JSON file created: "+jsonObjectReq);
+                String xml = jsonObjectReq.toString();
+                      
+                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+                con.setRequestMethod("POST");
+                con.setRequestProperty("Content-Type", "application/json");
+                con.setRequestProperty("X-PublicKey", "4448edc64c334237b402bc2656953dad");
+                con.setRequestProperty("Host", "app.trustev.com");
+                con.setRequestProperty("User-Agent", "Apache-HttpClient/4.5.5 (Java/16.0.1)");
+        
+                con.setDoOutput(true);
+//                DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+//                wr.writeBytes(xml);
+                
+               // OutputStream wr = con.getOutputStream();
+                
+                try(OutputStream wr = con.getOutputStream()) {
+                    byte[] input = xml.getBytes("utf-8");
+                    wr.write(input, 0, input.length);           
+                }
+                
+               // wr.writeBytes(xml);
+                
+                try(BufferedReader br = new BufferedReader(
+                        new InputStreamReader(con.getInputStream(), "utf-8"))) {
+                          StringBuilder response = new StringBuilder();
+                          String responseLine = null;
+                          while ((responseLine = br.readLine()) != null) {
+                              response.append(responseLine.trim());
+                          }
+                          System.out.println("My new response is...."+response.toString());
+                      }
+                
+                //////
+//                wr.flush();
+//                wr.close();
+//                String responseStatus = con.getResponseMessage();
+//                System.out.println(responseStatus);
+//                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+//                String inputLine;
+//                StringBuffer response = new StringBuffer();
+//                while ((inputLine = in.readLine()) != null) {
+//                    response.append(inputLine);
+//                }
+//                in.close();
+//                res = response.toString();
+//               System.out.println("response: " + res);
+               
+//               JSONObject jsonObject = new JSONObject(res) ;
+//               String session = (String) jsonObject.get("SessionId");
+//               System.out.println("SessionId: " + session);
+               
+      
+               
+              
+//               ObjectMapper mapper = new ObjectMapper();
+//               JsonNode node = mapper.readTree(res.toString());
+//               String phoneType = node.get("name").asText();
+               
+               
+               
+        //////
+    }
+
+}

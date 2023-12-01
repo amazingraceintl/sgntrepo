@@ -1,0 +1,156 @@
+package com.temenos.sgntech;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.temenos.sgntech.HashGenerator;
+
+/**
+ * TODO: Document me!
+ *
+ * @author Peter
+ *
+ */
+public class EntryPointlevel {
+
+    /**
+     * @param args
+     * @throws IOException
+     */
+    public static void main(String[] args) throws IOException {
+        // TODO Auto-generated method stub
+        EntryPointlevel Innercalls = new EntryPointlevel();
+        
+        
+        String mytimestamp;
+     
+        final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String[] tempm = sdf2.format(timestamp).toString().toString().split("\\+");
+        mytimestamp = (tempm[0] + "Z");
+        
+        String usern = "Cooperativa_Ahorro_y_Credito_TestSite";
+        String psswd = "830058098b40451d8ccb366a3c88a372";
+        String secret = "ae9361c550484a838ca5b6ef0c578488";
+        
+        String url = "https://app.trustev.com/api/v2.0/session";
+        String Pkey = "4448edc64c334237b402bc2656953dad";
+        String BlackBox = "XYZ";
+        String res;
+        String Username = "Cooperativa_Ahorro_y_Credito_TestSite";
+        String Psswd = "830058098b40451d8ccb366a3c88a372";
+        String sessionFlag = "false";
+        String ttkey=null;
+      
+        
+//        HashGenerator hashgen =new HashGenerator(mytimestamp,usern, psswd, secret);
+//        System.out.println(hashgen);
+        
+       // URL obj = new URL(url);
+
+        JSONObject jsonObjectReq = new JSONObject();
+        Map<String, String> mapp = new HashMap<>();
+        mapp.put("ClientIp", "185.107.57.7");
+        JSONArray Details = new JSONArray();
+        Details.add(mapp);
+        jsonObjectReq.put("Details", Details);
+        jsonObjectReq.put("BlackBox", BlackBox);
+        String xml = jsonObjectReq.toString();
+
+      String transuconnector = Innercalls.TransUconnector(Pkey, xml, url);       
+        JsonParser jsonParser = new JsonParser();
+        JsonElement jsonTree = jsonParser.parse(transuconnector);      
+        if (jsonTree.isJsonObject()) {
+            JsonObject jsonObject = jsonTree.getAsJsonObject();
+            JsonElement SessnId = jsonObject.get("SessionId");
+            System.out.println("SessionId ==....: " + SessnId);
+            if (SessnId != null) {
+                sessionFlag = "true";
+            }
+        }
+        if (sessionFlag.equals("true")) {
+            
+           
+            HashGenerator hashgen = new HashGenerator();
+           String HashResult = hashgen.HashGenerator(mytimestamp,usern, psswd, secret);
+            //HashGenerator hashgen =new HashGenerator(mytimestamp,usern, psswd, secret);
+            System.out.println(HashResult);
+            
+             ttkey = Innercalls.PostToken(Username,"", "", Psswd);
+           String urltk = "https://app.trustev.com/api/v2.0/token";
+             String Tokencaller =  Innercalls.TransUconnector("", ttkey, urltk);
+             System.out.println("What is Token response "+ Tokencaller);
+        }   
+    }
+
+    public String PostToken(String Usernam, String Ttamp, String HUsername,String HPsswd) {
+        // creating simple request, creating token request
+        final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+   
+        Map<Object, Object> tokenreqMap = new HashMap<Object, Object>();
+        JSONObject tokenreq_jsonObj;
+       
+        
+              // Block to create token request
+            tokenreqMap.put("UserName",Usernam);
+            tokenreqMap.put("Timestamp", Ttamp);
+            tokenreqMap.put("PasswordHash", HPsswd);
+            tokenreqMap.put("UserNameHash", HUsername);
+            tokenreq_jsonObj = new JSONObject(tokenreqMap);
+            System.out.println(tokenreq_jsonObj);
+            // End of Block to create token request
+            
+            
+            String tokenkey = tokenreq_jsonObj.toString();
+        return tokenkey;
+    }
+    
+    public String TransUconnector(String pkey, String reqs, String url) throws IOException {       
+        String res; 
+        URL obj = new URL(url);
+          HttpURLConnection con = (HttpURLConnection)  obj.openConnection();
+          con.setRequestMethod("POST");
+          con.setRequestProperty("Content-Type", "application/json");
+          con.setRequestProperty("X-PublicKey", pkey);
+          con.setRequestProperty("Host", "app.trustev.com");
+          con.setRequestProperty("User-Agent", "Apache-HttpClient/4.5.5 (Java/16.0.1)");
+          con.setDoOutput(true);
+          
+          DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+          wr.writeBytes(reqs);
+          wr.flush();
+          wr.close();
+          String responseStatus = con.getResponseMessage();
+          System.out.println(responseStatus);
+          BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+          String inputLine;
+          StringBuffer response = new StringBuffer();
+          while ((inputLine = in.readLine()) != null) {
+              response.append(inputLine);
+          }
+          in.close();
+           res = response.toString();
+          System.out.println("response: " + res);
+          JsonParser jsonParser = new JsonParser();
+          JsonElement jsonTree = jsonParser.parse(res);
+
+          return res;
+      }
+     
+}

@@ -1,0 +1,152 @@
+package com.temenos.sgntech;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+/**
+ * TODO: Document me!
+ *
+ * @author Peter
+ *
+ */
+public class EntryPointlevel {
+
+    /**
+     * @param args
+     * @throws IOException
+     */
+    public static void main(String[] args) throws IOException {
+        // TODO Auto-generated method stub
+        EntryPointlevel posttoken = new EntryPointlevel();
+        String url = "https://app.trustev.com/api/v2.0/session";
+        String Pkey = "4448edc64c334237b402bc2656953dad";
+        String BlackBox = "XYZ";
+        String res; 
+        String Username = "peter.ajayi@sgnewtech.com";
+        String Psswd = "Test@123";
+        
+        String sessionFlag ="false";
+        URL obj = new URL(url);
+
+        JSONObject jsonObjectReq = new JSONObject();
+        Map<String, String> mapp = new HashMap<>();
+        mapp.put("ClientIp", "185.107.57.7");
+        JSONArray Details = new JSONArray();
+        Details.add(mapp);
+        jsonObjectReq.put("Details", Details);
+        jsonObjectReq.put("BlackBox", BlackBox);
+        System.out.println("JSON Request created: " + jsonObjectReq);
+        String xml = jsonObjectReq.toString();
+
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("X-PublicKey", Pkey);
+        con.setRequestProperty("Host", "app.trustev.com");
+        con.setRequestProperty("User-Agent", "Apache-HttpClient/4.5.5 (Java/16.0.1)");
+        con.setDoOutput(true);
+        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+        wr.writeBytes(xml);
+        wr.flush();
+        wr.close();
+        String responseStatus = con.getResponseMessage();
+        System.out.println(responseStatus);
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+        res = response.toString();
+        System.out.println("response: " + res);
+        JsonParser jsonParser = new JsonParser();
+        JsonElement jsonTree = jsonParser.parse(res);
+        if (jsonTree.isJsonObject()) {
+            JsonObject jsonObject = jsonTree.getAsJsonObject();
+            JsonElement SessnId = jsonObject.get("SessionId");
+            System.out.println("SessionId ==....: " + SessnId);
+            if (SessnId!=null){sessionFlag = "true";}
+        }
+        if (sessionFlag.equals("true")){
+        posttoken.PostToken(Username, Psswd);
+        }
+
+    }
+
+    public String PostToken(String Username, String Psswd) {
+        // creating simple request, creating token request
+        final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Map<Object, Object> tokenreqMap = new HashMap<Object, Object>();
+        JSONObject tokenreq_jsonObj;
+        String username = null, pssword = null;
+        String tokenkey = null;
+        String mytimestamp;
+        String ip = null;
+        StringBuilder UhexString = new StringBuilder();
+        StringBuilder PhexString = new StringBuilder();
+
+        String[] var = new String[2];
+        var[0] = Username;
+        var[1] = Psswd;
+        for (int i = 1; i < var.length; i++) {
+            String Variable = var[i];
+            try {
+                MessageDigest md;
+                String input = Variable;
+                md = MessageDigest.getInstance("SHA-256");
+                byte[] hash = md.digest(input.getBytes());
+                if (i == 0) {
+                    for (byte b : hash) {
+                        UhexString.append(String.format("%02x", b));
+                    }
+                    username = UhexString.toString();
+                } else {
+                    for (byte b : hash) {
+                        PhexString.append(String.format("%02x", b));
+                    }
+                    pssword = PhexString.toString();
+                }
+                System.out.println(input + " :=Result1--1 " + UhexString);
+                System.out.println(input + " :=Result--2 " + PhexString);
+            } catch (NoSuchAlgorithmException e1) {
+            }
+
+            // Block to get timestamp
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            String[] tempm = sdf2.format(timestamp).toString().toString().split("\\.");
+            mytimestamp = (tempm[0] + ".001Z");
+            System.out.println(sdf2.format(timestamp));
+            // End of Block to get timestamp
+
+            // Block to create token request
+            tokenreqMap.put("UserName", var[0]);
+            tokenreqMap.put("Timestamp", mytimestamp);
+            tokenreqMap.put("PasswordHash", pssword);
+            tokenreqMap.put("UserNameHash", username);
+            tokenreq_jsonObj = new JSONObject(tokenreqMap);
+            System.out.println("Encoding a JSON object: ");
+            System.out.println(tokenreq_jsonObj);
+            // End of Block to create token request
+
+        }
+        return tokenkey;
+    }
+}

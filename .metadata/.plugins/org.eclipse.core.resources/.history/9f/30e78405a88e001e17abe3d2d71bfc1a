@@ -1,0 +1,60 @@
+package com.temenos.sgntech;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+
+/**
+ * TODO: Document me!
+ *
+ * @author Peter
+ *
+ */
+public class HashGenerator {
+
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        String mytimestamp;
+        String username = null;
+        StringBuilder UhexString = new StringBuilder();
+        StringBuilder PhexString = new StringBuilder();
+        final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String[] tempm = sdf2.format(timestamp).toString().toString().split("\\+");
+        mytimestamp = (tempm[0] + "Z");
+        System.out.println("My raw timestamp = ..." + mytimestamp);
+        
+        String Usern ="Cooperativa_Ahorro_y_Credito_TestSite";
+        String Psswd = "830058098b40451d8ccb366a3c88a372";
+        String secret = "ae9361c550484a838ca5b6ef0c578488";
+        
+        String Variable1 = mytimestamp+"."+Usern; //hash once
+        
+        String Variable2 =mytimestamp+"."+Psswd; //hash once
+        
+       // String var11 =  Variable1+"."+secret;
+        String Variable11 =  "7824a7bb19e226932f0bce3822b2ac5cbd751335fa6afc1d9e11013c5c539cf1"+"."+secret;
+        String var22 = Variable2+"."+secret;
+        
+        
+        System.out.println("Raw Value to-be Hash....." + Variable11);
+        
+        try {
+            MessageDigest md;
+            String input = Variable11;
+            md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(input.getBytes());
+            for (byte b : hash) {
+                UhexString.append(String.format("%02x", b));
+                username = UhexString.toString();
+            }
+            System.out.println("UserHashed Value......." + username);
+        } catch (NoSuchAlgorithmException e1) {
+        }
+    }
+}

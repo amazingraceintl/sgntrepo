@@ -1,0 +1,87 @@
+package com.temenos.sgntech;
+
+import java.io.FileReader;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+
+/**
+ * TODO: Document me!
+ *
+ * @author Peter
+ *
+ */
+public class ConnectTrustev {
+
+    /**
+     * @param args
+     * @throws SocketException 
+     */
+    public static void main(String[] args) throws SocketException {
+
+        JSONObject jsonObjectReq = new JSONObject();
+        JSONObject OuterjsonObjectReq = new JSONObject();
+        Map<String, String> mapp = new HashMap<>();
+        
+        jsonObjectReq.put("CaseNumber", "1239dfj");
+        jsonObjectReq.put("SessionId", "d16a8263-03ab-433e-9fca-e0f59b82b902");
+        
+      
+        mapp.put("Address1", "1600 PARK PLACE");
+        mapp.put("Address2", "");
+        mapp.put("Address3", "");
+        mapp.put("City", "ATLANTA");
+        mapp.put("CountryCode", "US");
+        mapp.put("FirstName", "PATRICK");
+        mapp.put("IsDefault", "true");
+        mapp.put("LastName", "TESTP");
+        mapp.put("PostalCode", "30326");
+        mapp.put("State", "GA");
+        mapp.put("Type", "0");
+              
+        JSONArray Addresses = new JSONArray();
+        Addresses.add(mapp);
+        jsonObjectReq.put("Addresses", Addresses);
+                          
+        OuterjsonObjectReq.put("FirstName","PATRICK");
+        OuterjsonObjectReq.put("LastName","TESTP");
+        OuterjsonObjectReq.put("SocialSecurityNumber","666010016");
+        OuterjsonObjectReq.put("DateOfBirth","4/30/1972");
+        OuterjsonObjectReq.put("Customer", jsonObjectReq);
+        
+        
+        System.out.println("JSON file created: "+OuterjsonObjectReq);    
+        /////// End of session json request
+      
+      
+        
+        //Extract session ID
+        JSONParser parser = new JSONParser();
+        try {
+            Object obj = parser.parse(new FileReader("C:/Users/Peter/Desktop/TucoopJava/session.json"));
+            JSONObject jsonObject = (JSONObject) obj;
+            String session = (String) jsonObject.get("SessionId");
+            System.out.println("SessionId: " + session);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //End of Extract session ID
+        
+    }
+
+}

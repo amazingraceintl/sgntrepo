@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="java.util.logging.Logger"/>
+<fullyQualifiedTypeName name="com.temenos.t24.api.records.fundstransfer.FundsTransferRecord"/>
+<fullyQualifiedTypeName name="com.temenos.t24.api.system.Session"/>
+<fullyQualifiedTypeName name="com.temenos.api.exceptions.T24CoreException"/>
+<fullyQualifiedTypeName name="com.temenos.api.TField"/>
+<fullyQualifiedTypeName name="com.temenos.t24.api.system.DataAccess"/>
+<fullyQualifiedTypeName name="com.temenos.t24.api.system.Date"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="java.util.ListIterator"/>
+<fullyQualifiedTypeName name="com.temenos.t24.api.records.customer.CustomerRecord"/>
+<fullyQualifiedTypeName name="com.temenos.api.TDate"/>
+<fullyQualifiedTypeName name="java.util.Date"/>
+<fullyQualifiedTypeName name="java.text.DateFormat"/>
+<fullyQualifiedTypeName name="java.text.ParseException"/>
+<fullyQualifiedTypeName name="java.net.URL"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="java.security.Timestamp"/>
+<fullyQualifiedTypeName name="java.sql.Timestamp"/>
+<fullyQualifiedTypeName name="java.text.SimpleDateFormat"/>
+<fullyQualifiedTypeName name="java.util.Enumeration"/>
+<fullyQualifiedTypeName name="java.net.NetworkInterface"/>
+<fullyQualifiedTypeName name="java.net.InetAddress"/>
+</qualifiedTypeNameHistroy>
